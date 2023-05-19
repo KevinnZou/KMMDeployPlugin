@@ -1,0 +1,16 @@
+{
+  "name": "shared",
+  "version": "0.0.1",
+  "homepage": "https://github.com/KevinnZou/kmmdeploy-podspec",
+  "source": {
+    "git": "https://github.com/KevinnZou/kmmdeploy-podspec.git"
+  },
+  "authors": "",
+  "license": "",
+  "summary": "Some description for the Shared Module",
+  "vendored_frameworks": "shared.xcframework",
+  "libraries": "c++",
+  "platforms": {
+    "ios": "14.1"
+  }
+}

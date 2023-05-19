@@ -1,0 +1,3 @@
+[submodule "kmmdeploy-podspec"]
+	path = kmmdeploy-podspec
+	url = git@github.com:KevinnZou/kmmdeploy-podspec.git

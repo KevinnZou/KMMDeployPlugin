@@ -1,0 +1,6 @@
+target 'iosApp' do
+  use_frameworks!
+  platform :ios, '14.1'
+#   pod 'shared', :path => '../shared'
+    pod 'shared', :git => 'git@github.com:KevinnZou/kmmdeploy-podspec.git', :branch => 'feature/test'
+end

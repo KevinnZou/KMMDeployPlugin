@@ -1,0 +1,22 @@
+PODS:
+  - shared (0.0.1)
+
+DEPENDENCIES:
+  - "shared (from `git@github.com:KevinnZou/kmmdeploy-podspec.git`, branch `feature/test`)"
+
+EXTERNAL SOURCES:
+  shared:
+    :branch: feature/test
+    :git: "git@github.com:KevinnZou/kmmdeploy-podspec.git"
+
+CHECKOUT OPTIONS:
+  shared:
+    :commit: 30fc07fe5a13154c0465035fdece82d837c3f333
+    :git: "git@github.com:KevinnZou/kmmdeploy-podspec.git"
+
+SPEC CHECKSUMS:
+  shared: 40c3c4433902e63f41fae5bc2bf404bdda113dea
+
+PODFILE CHECKSUM: 38eb42ecaf076cf3423436c484da72e4ed782b24
+
+COCOAPODS: 1.12.1
