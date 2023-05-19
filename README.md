@@ -170,3 +170,6 @@ kmmDeploy {
     podspecRepoName.set("kmmdeploy-podspec")
 }
 ```
+
+# License
+Compose PagingList is distributed under the terms of the Apache License (Version 2.0). See the [license](https://github.com/KevinnZou/KMMDeployPlugin/blob/main/LICENSE) for more information.
