@@ -27,6 +27,11 @@ artifacts for Android and iOS.
 ```shell
 ./gradlew buildKMM
 ```
+4. Build just Android AAR or iOS XCFramework for Multiplatform Module
+```shell
+./gradlew buildKMMAARs
+./gradlew buildKMMXCFrameworks
+```
 
 ## Config the Maven Publish for Android AAR
 After we get the AAR output of the KMM, we need to deploy it to a remote repository so that 
@@ -50,7 +55,7 @@ For iOS artifact, this plugin supports two ways to deploy:
 It just copies the output which is XCFramework to an output directory at the root directory. You will have
 the freedom on how to use that artifact
 ```shell
-./gradlew copyXCFrameworkToRoot
+./gradlew copyXCFrameworkToProject
 ```
 
 ### Cocoapods
@@ -93,13 +98,13 @@ plugins {
 ## Apply Plugin
 Since this plugin has be uploaded to the Center Gradle Portal, you can just apply it without adding depending repository.
 
-Current version is **_1.0.0_**
+Current version is **_1.3.0_**
 ```kotlin
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     `maven-publish`
-    id("io.github.kevinnzou.kmmdeploy")  version "1.0.0"
+    id("io.github.kevinnzou.kmmdeploy")  version "1.3.0"
 }
 ```
 
@@ -136,6 +141,23 @@ kotlin {
     }
 }
 ```
+
+Since Version 1.3.0, this plugin supports the build of iOS XCFrameworks without applying CocoaPods Plugin.
+```kotlin
+kotlin {
+    // ...
+    
+    val iosTargets = listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+    val xcf = XCFramework()
+    iosTargets.forEach {
+        it.binaries.framework {
+            baseName = "shared"
+            xcf.add(this)
+        }
+    }
+}
+```
+Note that, you must specify the baseName for frameworks like above. Otherwise, you will get an error.
 
 ## Config Plugin Properties
 This plugin provides an extension for config the properties:
