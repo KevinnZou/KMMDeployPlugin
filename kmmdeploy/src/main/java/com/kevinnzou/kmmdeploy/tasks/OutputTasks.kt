@@ -1,5 +1,8 @@
-package com.kevinnzou.kmmdeploy
+package com.kevinnzou.kmmdeploy.tasks
 
+import com.kevinnzou.kmmdeploy.GROUP
+import com.kevinnzou.kmmdeploy.isCocoaPodsApplied
+import com.kevinnzou.kmmdeploy.kmmDeployExt
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.register
@@ -12,8 +15,9 @@ internal fun Project.copyKMMOutput() {
     copyXCFramework()
     tasks.register("copyKMMOutput") {
         group = GROUP
-        description = "Copy the Output of the Kotlin Multiplatform(Android AAR & iOS XCFramework ) to Root Directory"
-        dependsOn("copyAndroidAAR", "copyXCFramework")
+        description =
+            "Copy the Output of the Kotlin Multiplatform(Android AAR & iOS XCFramework ) to Root Directory"
+        dependsOn("buildKMM","copyAndroidAAR", "copyXCFramework")
     }
 }
 
@@ -29,46 +33,58 @@ internal fun Project.copyAndroidAAR() = tasks.register<Copy>("copyAndroidAAR") {
         logger.quiet("Android AAR successfully copied to ${rootProject.rootDir}/${kmmDeployExt.outputDirectory.get()}/aar")
     }
 
-    dependsOn("buildKMM")
+    dependsOn("buildKMMAARs")
 }
 
-internal fun Project.copyXCFrameworkToRoot() = tasks.register<Copy>("copyXCFrameworkToRoot") {
+internal fun Project.copyXCFrameworkToProject() = tasks.register<Copy>("copyXCFrameworkToProject") {
     group = GROUP
     description = "Copy the iOS XCFramework Output of the Kotlin Multiplatform to Root Directory"
 
     val outputDir =
         "${kmmDeployExt.outputDirectory.get()}/${kmmDeployExt.podspecRepoName.orNull ?: "kmm-xcframework"}"
-    from(layout.buildDirectory.dir("cocoapods/publish/debug"))
+    if (isCocoaPodsApplied) {
+        from(layout.buildDirectory.dir("cocoapods/publish"))
+    } else {
+        from(layout.buildDirectory.dir("XCFrameworks"))
+    }
+
     into(layout.projectDirectory.dir("../$outputDir"))
 
     doLast {
         logger.quiet("iOS XCFramework successfully copied to ${rootProject.rootDir}/${outputDir}")
     }
 
-    dependsOn("buildKMM")
+    dependsOn("buildKMMXCFrameworks")
 }
 
 internal fun Project.copyXCFrameworkToRepo() = tasks.register<Copy>("copyXCFrameworkToRepo") {
     group = GROUP
-    description = "Copy the iOS XCFramework Output of the Kotlin Multiplatform to PodSpec git submodule"
+    description =
+        "Copy the iOS XCFramework Output of the Kotlin Multiplatform to PodSpec git submodule"
 
     val repoName = kmmDeployExt.podspecRepoName.orNull ?: return@register
-    from(layout.buildDirectory.dir("cocoapods/publish/debug"))
+
+    if (isCocoaPodsApplied) {
+        from(layout.buildDirectory.dir("cocoapods/publish/release"))
+    } else {
+        from(layout.buildDirectory.dir("XCFrameworks"))
+    }
     into(layout.projectDirectory.dir("../$repoName"))
 
     doLast {
         logger.quiet("iOS XCFramework successfully copied to ${rootProject.rootDir}/${repoName}")
     }
 
-    dependsOn("buildKMM")
+    dependsOn("buildKMMXCFrameworks")
 }
 
 internal fun Project.copyXCFramework() {
-    copyXCFrameworkToRoot()
+    copyXCFrameworkToProject()
     copyXCFrameworkToRepo()
     tasks.register<Copy>("copyXCFramework") {
         group = GROUP
-        description = "Copy the iOS XCFramework Output of the Kotlin Multiplatform to Root Directory and PodSpec git submodule"
-        dependsOn("copyXCFrameworkToOutput", "copyXCFrameworkToRepo")
+        description =
+            "Copy the iOS XCFramework Output of the Kotlin Multiplatform to Root Directory and PodSpec git submodule"
+        dependsOn("copyXCFrameworkToProject", "copyXCFrameworkToRepo")
     }
 }

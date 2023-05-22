@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
+
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
@@ -22,9 +24,17 @@ kotlin {
             }
         }
     }
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
+
+    val iosTargets = listOf(iosX64(), iosArm64(), iosSimulatorArm64())
+
+    // uncomment it if you don't want to use CococaPods plugin, then you can use this to produce XCFrameworks'
+//    val xcf = XCFramework()
+//    iosTargets.forEach {
+//        it.binaries.framework {
+//            baseName = "shared"
+//            xcf.add(this)
+//        }
+//    }
 
     cocoapods {
         summary = "Some description for the Shared Module"

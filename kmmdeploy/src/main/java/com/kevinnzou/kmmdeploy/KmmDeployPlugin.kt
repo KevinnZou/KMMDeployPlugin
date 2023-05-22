@@ -1,6 +1,10 @@
 package com.kevinnzou.kmmdeploy
 
 
+import com.kevinnzou.kmmdeploy.configs.configAndroidKMMPublish
+import com.kevinnzou.kmmdeploy.tasks.buildKMM
+import com.kevinnzou.kmmdeploy.tasks.cleanKMMOutputs
+import com.kevinnzou.kmmdeploy.tasks.copyKMMOutput
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.provider.Property
@@ -13,11 +17,11 @@ class KmmDeployPlugin : Plugin<Project> {
             outputDirectory.convention("KMMOutputs")
             version.convention(project.version.toString())
         }
-        afterEvaluate{
+        afterEvaluate {
             val buildTask = buildKMM()
             copyKMMOutput()
             configAndroidKMMPublish(buildTask)
-            cleanOutputs()
+            cleanKMMOutputs()
             deployKMM()
         }
     }
@@ -29,16 +33,19 @@ interface KmmDeployExtension {
      * Use gradle version by default
      */
     val version: Property<String>
+
     /**
      * ArtifactId for artifacts published to Maven
      * Use "kmm-android" by default
      */
     val androidArtifactId: Property<String>
+
     /**
      * The name of the submodule that manages the Podspec file and XCFramework
      * If you do not want to use submodule, please don't specify this property
      */
     val podspecRepoName: Property<String>
+
     /**
      * The name of the output directory for artifacts of Android and iOS
      * Use "KMMOutputs" by default

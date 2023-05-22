@@ -1,5 +1,7 @@
-package com.kevinnzou.kmmdeploy
+package com.kevinnzou.kmmdeploy.configs
 
+import com.kevinnzou.kmmdeploy.kmmDeployExt
+import com.kevinnzou.kmmdeploy.publishExt
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.publish.maven.MavenPublication

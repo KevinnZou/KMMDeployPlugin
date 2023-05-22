@@ -35,3 +35,7 @@ gradlePlugin {
         }
     }
 }
+
+dependencies {
+    implementation(kotlin("gradle-plugin"))
+}
