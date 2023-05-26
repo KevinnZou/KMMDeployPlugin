@@ -98,13 +98,6 @@ interface KmmDeployExtension {
     val outputDirectory: Property<String>
 
     /**
-     * The url of the repository that store the zip file of XCFrameworks
-     * which will be used to fill the url filed of Package.swift files
-     * Use the url of the first repository in maven-publish extension by default
-     */
-    val spmRepoUrl: Property<String>
-
-    /**
      * ArtifactId for artifacts published to Maven
      * Use "kmm-spm" by default
      */
@@ -123,9 +116,17 @@ interface KmmDeployExtension {
     val useSpm: Property<Boolean>
 
     /**
+     * The url of the repository that store the zip file of XCFrameworks
+     * which will be used to fill the url filed of Package.swift files
+     * Use the url of the first repository in maven-publish extension by default
+     */
+    val spmUrl: Property<String>
+
+    /**
      * Need SPM Support
      */
-    fun Project.spm() {
+    fun Project.spm(url: String? = null) {
         useSpm.set(true)
+        url?.apply { spmUrl.set(url) }
     }
 }

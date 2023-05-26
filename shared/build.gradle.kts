@@ -13,9 +13,9 @@ group = "io.github.kevinnzou"
 version = "0.0.1"
 
 kmmDeploy {
-    androidArtifactId.set("kmmAndroid")
+    androidArtifactId.set("kmm-android")
     podspecRepoName.set("kmmdeploy-podspec")
-    spm()
+    spm("https://maven.pkg.github.com/KevinnZou/KMMDeployPlugin")
 }
 
 kotlin {

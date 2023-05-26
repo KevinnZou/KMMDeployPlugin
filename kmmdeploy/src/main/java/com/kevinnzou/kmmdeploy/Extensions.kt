@@ -97,7 +97,7 @@ internal val Project.publishingRepos
 
 internal val Project.spmRepoUrl
     get() = run {
-        kmmDeployExt.spmRepoUrl.orNull ?: publishingRepos.firstOrNull()?.url?.toString() ?: ""
+        kmmDeployExt.spmUrl.orNull ?: publishingRepos.firstOrNull()?.url?.toString() ?: ""
     }
 
 internal val Project.spm
