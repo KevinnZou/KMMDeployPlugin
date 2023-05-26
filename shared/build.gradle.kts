@@ -1,3 +1,4 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 import org.jetbrains.kotlin.gradle.plugin.mpp.apple.XCFramework
 
 plugins {
@@ -8,12 +9,13 @@ plugins {
     `maven-publish`
 }
 
-group = "com.netease.yanxuan"
-version = "0.0.1-SNAPSHOT"
+group = "io.github.kevinnzou"
+version = "0.0.1"
 
 kmmDeploy {
-    androidArtifactId.set("kmm-android")
+    androidArtifactId.set("kmmAndroid")
     podspecRepoName.set("kmmdeploy-podspec")
+    spm()
 }
 
 kotlin {
@@ -88,10 +90,20 @@ android {
 
 publishing {
     repositories {
+        // Publish to Github Maven repository
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/KevinnZou/KMMDeployPlugin")
+            credentials {
+                username = gradleLocalProperties(rootDir).getProperty("gpr.user")
+                password = gradleLocalProperties(rootDir).getProperty("gpr.key")
+            }
+        }
+        // Publish to local
         maven {
             // change URLs to point to your repos, e.g. http://my.org/repo
-            val releasesRepoUrl = uri(layout.projectDirectory.dir("repos/releases"))
-            val snapshotsRepoUrl = uri(layout.projectDirectory.dir("repos/snapshots"))
+            val releasesRepoUrl = uri(layout.projectDirectory.dir("../repos/releases"))
+            val snapshotsRepoUrl = uri(layout.projectDirectory.dir("../repos/snapshots"))
             url = if (version.toString().endsWith("SNAPSHOT")) snapshotsRepoUrl else releasesRepoUrl
 //            credentials {
 //                val properties = gradleLocalProperties(rootDir)

@@ -1,8 +1,10 @@
 package com.kevinnzou.kmmdeploy.tasks
 
 import com.kevinnzou.kmmdeploy.GROUP
-import com.kevinnzou.kmmdeploy.isCocoaPodsApplied
 import com.kevinnzou.kmmdeploy.kmmDeployExt
+import com.kevinnzou.kmmdeploy.xcFrameworkPath
+import com.kevinnzou.kmmdeploy.xcFrameworkReleasePath
+import com.kevinnzou.kmmdeploy.xcFrameworkReleaseZipFile
 import org.gradle.api.Project
 import org.gradle.api.tasks.Copy
 import org.gradle.kotlin.dsl.register
@@ -17,7 +19,7 @@ internal fun Project.copyKMMOutput() {
         group = GROUP
         description =
             "Copy the Output of the Kotlin Multiplatform(Android AAR & iOS XCFramework ) to Root Directory"
-        dependsOn("buildKMM","copyAndroidAAR", "copyXCFramework")
+        dependsOn("copyAndroidAAR", "copyXCFramework")
     }
 }
 
@@ -42,12 +44,8 @@ internal fun Project.copyXCFrameworkToProject() = tasks.register<Copy>("copyXCFr
 
     val outputDir =
         "${kmmDeployExt.outputDirectory.get()}/${kmmDeployExt.podspecRepoName.orNull ?: "kmm-xcframework"}"
-    if (isCocoaPodsApplied) {
-        from(layout.buildDirectory.dir("cocoapods/publish"))
-    } else {
-        from(layout.buildDirectory.dir("XCFrameworks"))
-    }
 
+    from(xcFrameworkPath)
     into(layout.projectDirectory.dir("../$outputDir"))
 
     doLast {
@@ -57,34 +55,54 @@ internal fun Project.copyXCFrameworkToProject() = tasks.register<Copy>("copyXCFr
     dependsOn("buildKMMXCFrameworks")
 }
 
-internal fun Project.copyXCFrameworkToRepo() = tasks.register<Copy>("copyXCFrameworkToRepo") {
-    group = GROUP
-    description =
-        "Copy the iOS XCFramework Output of the Kotlin Multiplatform to PodSpec git submodule"
+internal fun Project.copyReleaseXCFrameworkToRepo() =
+    tasks.register<Copy>("copyReleaseXCFrameworkToRepo") {
+        group = GROUP
+        description =
+            "Copy the release version of iOS XCFramework Output of the Kotlin Multiplatform to PodSpec git submodule"
 
-    val repoName = kmmDeployExt.podspecRepoName.orNull ?: return@register
+        val repoName = kmmDeployExt.podspecRepoName.orNull ?: return@register
+        from(xcFrameworkReleasePath)
+        into(layout.projectDirectory.dir("../$repoName"))
 
-    if (isCocoaPodsApplied) {
-        from(layout.buildDirectory.dir("cocoapods/publish/release"))
-    } else {
-        from(layout.buildDirectory.dir("XCFrameworks"))
+        doLast {
+            logger.quiet("iOS XCFramework successfully copied to ${rootProject.rootDir}/${repoName}")
+        }
+
+        dependsOn("buildKMMXCFrameworks")
     }
-    into(layout.projectDirectory.dir("../$repoName"))
 
-    doLast {
-        logger.quiet("iOS XCFramework successfully copied to ${rootProject.rootDir}/${repoName}")
+internal fun Project.copyXCFrameworkZipToProject() =
+    tasks.register<Copy>("copyXCFrameworkZipToProject") {
+        group = GROUP
+        description =
+            "Copy the iOS XCFramework Zip Output of the Kotlin Multiplatform to Root Directory"
+
+        val outputDir =
+            "${kmmDeployExt.outputDirectory.get()}/${kmmDeployExt.podspecRepoName.orNull ?: "kmm-xcframework"}"
+
+        from(xcFrameworkReleaseZipFile.parentFile.path)
+        into(layout.projectDirectory.dir("../$outputDir"))
+
+        doLast {
+            logger.quiet("iOS XCFramework Zip successfully copied to ${rootProject.rootDir}/${outputDir}")
+        }
+
+        dependsOn("zipXCFrameworks")
     }
-
-    dependsOn("buildKMMXCFrameworks")
-}
 
 internal fun Project.copyXCFramework() {
     copyXCFrameworkToProject()
-    copyXCFrameworkToRepo()
+    copyReleaseXCFrameworkToRepo()
+    copyXCFrameworkZipToProject()
     tasks.register<Copy>("copyXCFramework") {
         group = GROUP
         description =
             "Copy the iOS XCFramework Output of the Kotlin Multiplatform to Root Directory and PodSpec git submodule"
-        dependsOn("copyXCFrameworkToProject", "copyXCFrameworkToRepo")
+        dependsOn(
+            "copyXCFrameworkToProject",
+            "copyReleaseXCFrameworkToRepo",
+            "copyXCFrameworkZipToProject"
+        )
     }
 }

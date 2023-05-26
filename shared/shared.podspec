@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'shared'
-    spec.version                  = '0.0.1-SNAPSHOT'
+    spec.version                  = '0.0.1'
     spec.homepage                 = 'https://github.com/KevinnZou/kmmdeploy-podspec'
     spec.source                   = { :http=> ''}
     spec.authors                  = ''
