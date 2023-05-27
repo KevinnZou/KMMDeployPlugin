@@ -299,6 +299,32 @@ kmmDeploy {
 }
 ```
 
+# Local Development
+This plugin also supports local development
+
+## Android 
+After you finished development, you can just call copyAndroidAAR task which will build the android aar
+and copy it to the root directory of the project.
+```shell
+./gradlew copyAndroidAAR
+```
+
+Assume your android project is at the same directory with KMM project, then you can depend on the KMM Aar 
+produced at last step like that:
+```kotlin
+dependencies {
+    implementation(files("../KMMProject/kmm-outputs/shared-debug.aar"))
+}
+```
+
+## iOS
+For iOS, we provide both cocoapods and SPM way. You can just call copyXCFramework task which will build the
+iOS artifact, zip it, and copy it to the root project. It will also produce the podfile if you apply cocoapods
+plugin. With these outputs, you can directly move the produced XCFramework to Xcode and use it locally.
+```shell
+./gradlew copyXCFramework
+```
+
 # License
 
 Compose PagingList is distributed under the terms of the Apache License (Version 2.0). See
