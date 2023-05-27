@@ -44,9 +44,13 @@ internal fun Project.createPackageSwiftFile(
             )
         }
     }
-    publishTask?.let {
-        createPackageSwiftTask.configure {
-            dependsOn(it)
+
+    // Do not depend on publish tasks if it is called by createPackageSwiftFile.
+    if (!gradle.startParameter.taskNames.contains("createPackageSwiftFile")){
+        publishTask?.let {
+            createPackageSwiftTask.configure {
+                dependsOn(it)
+            }
         }
     }
     deployTask?.configure { dependsOn(createPackageSwiftTask) }
