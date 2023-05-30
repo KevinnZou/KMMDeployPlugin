@@ -15,8 +15,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "shared",
-            url: "https://maven.pkg.github.com/KevinnZou/KMMDeployPlugin/io/github/kevinnzou/kmm-spm/0.0.1/kmm-spm-0.0.1.zip",
-            checksum: "355250e5c06dab84ad102f3967668d06bd68f9228384c6bb4bf01190228ee182"
+            url: "https://maven.pkg.github.com/KevinnZou/KMMDeployPlugin/io/github/kevinnzou/kmm-spm/0.0.2/kmm-spm-0.0.2.zip",
+            checksum: "356e4498632ff3391474b58b164ce068bdc0f7d167ebd161e3348dd0a56d6cf6"
         )
     ]
 )

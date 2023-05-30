@@ -7,6 +7,7 @@ import com.kevinnzou.kmmdeploy.kmmDeployExt
 import com.kevinnzou.kmmdeploy.packageSwiftFilePath
 import com.kevinnzou.kmmdeploy.spmRepoUrl
 import com.kevinnzou.kmmdeploy.xcFrameworkDebugZipFile
+import com.kevinnzou.kmmdeploy.xcFrameworkReleaseZipFile
 import org.gradle.api.Project
 import org.gradle.api.Task
 import org.gradle.api.tasks.TaskProvider
@@ -27,7 +28,7 @@ internal fun Project.createPackageSwiftFile(
 
         doLast {
             val packageSwiftFile = file(packageSwiftFilePath)
-            val checksum = getPackageSwiftChecksum(xcFrameworkDebugZipFile)
+            val checksum = getPackageSwiftChecksum(xcFrameworkReleaseZipFile)
 
             val groupUrl = project.group.toString().replace(".", "/")
             val spmArtifactId = kmmDeployExt.spmArtifactId.getOrElse("")
@@ -43,6 +44,7 @@ internal fun Project.createPackageSwiftFile(
                 )
             )
         }
+        dependsOn("zipXCFrameworks")
     }
 
     // Do not depend on publish tasks if it is called by createPackageSwiftFile.
