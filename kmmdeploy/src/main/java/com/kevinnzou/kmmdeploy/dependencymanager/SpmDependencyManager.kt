@@ -6,7 +6,6 @@ import com.kevinnzou.kmmdeploy.baseVersion
 import com.kevinnzou.kmmdeploy.kmmDeployExt
 import com.kevinnzou.kmmdeploy.packageSwiftFilePath
 import com.kevinnzou.kmmdeploy.spmRepoUrl
-import com.kevinnzou.kmmdeploy.xcFrameworkDebugZipFile
 import com.kevinnzou.kmmdeploy.xcFrameworkReleaseZipFile
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -48,7 +47,7 @@ internal fun Project.createPackageSwiftFile(
     }
 
     // Do not depend on publish tasks if it is called by createPackageSwiftFile.
-    if (!gradle.startParameter.taskNames.contains("createPackageSwiftFile")){
+    if (!gradle.startParameter.taskNames.contains("createPackageSwiftFile")) {
         publishTask?.let {
             createPackageSwiftTask.configure {
                 dependsOn(it)
