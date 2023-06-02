@@ -15,8 +15,8 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "shared",
-            url: "https://github.com/KevinnZou/KMMDeployPlugin/blob/feature/test_spm/shared.xcframework.zip",
-            checksum: "356e4498632ff3391474b58b164ce068bdc0f7d167ebd161e3348dd0a56d6cf6"
+            url: "https://maven.pkg.github.com/ColaGom/sunflower-kmm/com/samples/apps/sunflower/shared/1.0.2/shared-1.0.2.zip",
+            checksum: "46e6210d5a275334a047c766ed21294cd1594b65343fdb343ffa7ad4130ce781"
         )
     ]
 )
