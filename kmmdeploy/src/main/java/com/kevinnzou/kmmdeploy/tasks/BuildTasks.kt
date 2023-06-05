@@ -3,6 +3,7 @@ package com.kevinnzou.kmmdeploy.tasks
 import com.kevinnzou.kmmdeploy.GROUP
 import com.kevinnzou.kmmdeploy.baseName
 import com.kevinnzou.kmmdeploy.capitalizeFirstLetter
+import com.kevinnzou.kmmdeploy.hasJvm
 import com.kevinnzou.kmmdeploy.isCocoaPodsApplied
 import org.gradle.api.Project
 import org.gradle.api.Task
@@ -11,6 +12,12 @@ import org.gradle.api.tasks.TaskProvider
 /**
  * Created By Kevin Zou On 2023/5/18
  */
+internal fun Project.buildKMMJvmJar() = tasks.register("buildKMMJvmJar") {
+    group = GROUP
+    description = "Build the Jvm Jar for Multiplatform Module"
+    dependsOn("jvmJar")
+}
+
 internal fun Project.buildKMMXCFrameworks(): TaskProvider<Task> {
     buildKMMDebugXCFramework()
     buildKMMReleaseXCFramework()
@@ -72,6 +79,7 @@ internal fun Project.buildKMMDebug() = tasks.register("buildKMMDebug") {
     description =
         "Build the debug version of Android AAR and iOS XCFramework for Multiplatform Module"
     dependsOn("buildKMMDebugAAR", "buildKMMDebugXCFramework")
+    if (hasJvm) dependsOn("buildKMMJvmJar")
 }
 
 internal fun Project.buildKMMRelease() = tasks.register("buildKMMRelease") {
@@ -79,6 +87,7 @@ internal fun Project.buildKMMRelease() = tasks.register("buildKMMRelease") {
     description =
         "Build the release version of Android AAR and iOS XCFramework for Multiplatform Module"
     dependsOn("buildKMMReleaseAAR", "buildKMMReleaseXCFramework")
+    if (hasJvm) dependsOn("buildKMMJvmJar")
 }
 
 internal fun Project.buildKMM(): TaskProvider<Task> {
@@ -86,6 +95,7 @@ internal fun Project.buildKMM(): TaskProvider<Task> {
     buildKMMRelease()
     buildKMMAARs()
     buildKMMXCFrameworks()
+    if (hasJvm) buildKMMJvmJar()
     return tasks.register("buildKMM") {
         group = GROUP
         description =

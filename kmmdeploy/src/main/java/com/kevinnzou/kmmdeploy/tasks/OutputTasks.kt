@@ -1,6 +1,7 @@
 package com.kevinnzou.kmmdeploy.tasks
 
 import com.kevinnzou.kmmdeploy.GROUP
+import com.kevinnzou.kmmdeploy.hasJvm
 import com.kevinnzou.kmmdeploy.kmmDeployExt
 import com.kevinnzou.kmmdeploy.xcFrameworkPath
 import com.kevinnzou.kmmdeploy.xcFrameworkReleasePath
@@ -15,11 +16,13 @@ import org.gradle.kotlin.dsl.register
 internal fun Project.copyKMMOutput() {
     copyAndroidAAR()
     copyXCFramework()
+    if (hasJvm) copyJvmJar()
     tasks.register("copyKMMOutput") {
         group = GROUP
         description =
             "Copy the Output of the Kotlin Multiplatform(Android AAR & iOS XCFramework ) to Root Directory"
         dependsOn("copyAndroidAAR", "copyXCFramework")
+        if (hasJvm) dependsOn("copyJvmJar")
     }
 }
 
@@ -105,4 +108,21 @@ internal fun Project.copyXCFramework() {
             "copyXCFrameworkZipToProject"
         )
     }
+}
+
+internal fun Project.copyJvmJar() = tasks.register<Copy>("copyJvmJar") {
+    group = GROUP
+    description = "Copy the Jvm Jar Output of the Kotlin Multiplatform to Root Directory"
+
+    val dest = "../${kmmDeployExt.outputDirectory.get()}/jar"
+    from(layout.buildDirectory.dir("libs")) {
+        include("*.jar")
+    }
+    into(layout.projectDirectory.dir(dest))
+
+    doLast {
+        logger.quiet("Jvm Jar successfully copied to ${rootProject.rootDir}/${kmmDeployExt.outputDirectory.get()}/aar")
+    }
+
+    dependsOn("buildKMMJvmJar")
 }
