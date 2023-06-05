@@ -240,14 +240,14 @@ error.
 Since this plugin has be uploaded to the Center Gradle Portal, you can just apply it without adding
 depending repository.
 
-Current version is **_2.0.1_**
+Current version is **_2.2.0_**
 
 ```kotlin
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     `maven-publish`
-    id("io.github.kevinnzou.kmmdeploy") version "2.0.1"
+    id("io.github.kevinnzou.kmmdeploy") version "2.2.0"
 }
 ```
 
