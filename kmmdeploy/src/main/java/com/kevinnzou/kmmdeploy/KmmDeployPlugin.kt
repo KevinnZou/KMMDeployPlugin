@@ -2,6 +2,7 @@ package com.kevinnzou.kmmdeploy
 
 
 import com.kevinnzou.kmmdeploy.configs.configAndroidKMMPublish
+import com.kevinnzou.kmmdeploy.configs.configJvmJarKMMPublish
 import com.kevinnzou.kmmdeploy.configs.configSpmKMMPublish
 import com.kevinnzou.kmmdeploy.dependencymanager.createPackageSwiftFile
 import com.kevinnzou.kmmdeploy.tasks.buildKMM
@@ -18,6 +19,7 @@ class KmmDeployPlugin : Plugin<Project> {
         extensions.create<KmmDeployExtension>("kmmDeploy").apply {
             androidArtifactId.convention("kmm-android")
             spmArtifactId.convention("kmm-spm")
+            jvmArtifactId.convention("kmm-jvm")
             outputDirectory.convention("kmm-outputs")
             useSpm.convention(false)
         }
@@ -38,9 +40,22 @@ class KmmDeployPlugin : Plugin<Project> {
     }
 
     private fun Project.applyDependencyManagerAndDeployTasks() {
-        val zipTask = zipXCFrameworks()
 
         // apply the iOS deploy tasks
+        applyIOSDM()
+
+        // apply the Android deploy tasks
+        applyAndroidDM()
+
+        // apply the Jvm deploy tasks
+        applyJvmDM()
+
+        // Deploy All Artifacts
+        deployKMM()
+    }
+
+    private fun Project.applyIOSDM() {
+        val zipTask = zipXCFrameworks()
         val task = if (spm) {
             val spmPublishTask = tasks.register("publishXCFrameworks") {
                 group = GROUP
@@ -57,8 +72,9 @@ class KmmDeployPlugin : Plugin<Project> {
             deployKMMiOSCocoapods()
         }
         deployKMMiOS(task)
+    }
 
-        // apply the Android deploy tasks
+    private fun Project.applyAndroidDM() {
         val aarPublishTask = tasks.register("publishAAR") {
             group = GROUP
             description =
@@ -66,9 +82,18 @@ class KmmDeployPlugin : Plugin<Project> {
         }
         configAndroidKMMPublish(aarPublishTask)
         deployKMMAndroid(aarPublishTask)
+    }
 
-        // Deploy All Artifacts
-        deployKMM()
+    private fun Project.applyJvmDM() {
+        if (hasJvm) {
+            val jarPublishTask = tasks.register("publishJvmJar") {
+                group = GROUP
+                description =
+                    "Publish the Jvm Jar Output of the Kotlin Multiplatform To Maven Repository"
+            }
+            configJvmJarKMMPublish(jarPublishTask)
+            deployKMMJvm(jarPublishTask)
+        }
     }
 }
 
@@ -80,7 +105,7 @@ interface KmmDeployExtension {
     val version: Property<String>
 
     /**
-     * ArtifactId for artifacts published to Maven
+     * ArtifactId for Android artifacts published to Maven
      * Use "kmm-android" by default
      */
     val androidArtifactId: Property<String>
@@ -98,7 +123,13 @@ interface KmmDeployExtension {
     val outputDirectory: Property<String>
 
     /**
-     * ArtifactId for artifacts published to Maven
+     * ArtifactId for Jvm artifacts published to Maven
+     * Use "kmm-spm" by default
+     */
+    val jvmArtifactId: Property<String>
+
+    /**
+     * ArtifactId for iOS artifacts published to Maven
      * Use "kmm-spm" by default
      */
     val spmArtifactId: Property<String>

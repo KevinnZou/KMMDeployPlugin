@@ -12,8 +12,17 @@ internal fun Project.deployKMM(): TaskProvider<Task> {
         group = GROUP
         description = "Deploy the KMM Artifacts"
         dependsOn("deployKMMAndroid", "deployKMMiOS")
+        if (hasJvm) dependsOn("deployKMMJvm")
     }
 }
+
+internal fun Project.deployKMMJvm(publishTask: TaskProvider<Task>) =
+    tasks.register("deployKMMJvm") {
+        group = GROUP
+        description = "Deploy the KMM Jvm Artifact(JAR)"
+        dependsOn("copyJvmJar")
+        dependsOn(publishTask)
+    }
 
 internal fun Project.deployKMMAndroid(publishTask: TaskProvider<Task>) =
     tasks.register("deployKMMAndroid") {

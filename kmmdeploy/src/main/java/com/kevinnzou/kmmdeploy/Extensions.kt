@@ -32,6 +32,9 @@ internal val KotlinMultiplatformExtension.iOSTargets
 internal val Project.isCocoaPodsApplied
     get() = plugins.hasPlugin("org.jetbrains.kotlin.native.cocoapods")
 
+internal val Project.hasJvm
+    get() = kotlinExt.targets.findByName("jvm") != null
+
 internal val Project.baseName
     get() = run {
         try {
@@ -43,11 +46,14 @@ internal val Project.baseName
         }
     }
 
-internal val Project.androidPublishName
+internal val androidPublishName
     get() = "KMMAndroid"
 
-internal val Project.spmPublishName
+internal val spmPublishName
     get() = "KMMSpm"
+
+internal val jvmPublishName
+    get() = "KMMJvm"
 
 internal val Project.xcFrameworkPath
     get() = run {

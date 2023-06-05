@@ -1,6 +1,7 @@
 package com.kevinnzou.kmmdeploy.configs
 
 import com.kevinnzou.kmmdeploy.androidPublishName
+import com.kevinnzou.kmmdeploy.jvmPublishName
 import com.kevinnzou.kmmdeploy.kmmDeployExt
 import com.kevinnzou.kmmdeploy.publishExt
 import com.kevinnzou.kmmdeploy.publishingRepos
@@ -30,6 +31,25 @@ internal fun Project.configAndroidKMMPublish(publishTask: TaskProvider<Task>? = 
             extension = "aar"
         }
 //        artifact("build/outputs/aar/shared-release.aar")
+    }
+
+    configPublishDependency(publicationName, publishTask)
+}
+
+internal fun Project.configJvmJarKMMPublish(publishTask: TaskProvider<Task>? = null) {
+    val jvmArtifactId = kmmDeployExt.jvmArtifactId.get()
+    val version = kmmDeployExt.version.getOrElse(project.version as String)
+    val publicationName = jvmPublishName
+    publishExt.publications.create(publicationName, MavenPublication::class.java) {
+        this.version = version
+        this.groupId = project.group as String
+        artifactId = jvmArtifactId
+        val archiveProvider = project.tasks.named("jvmJar", Zip::class.java).flatMap {
+            it.archiveFile
+        }
+        artifact(archiveProvider) {
+            extension = "jar"
+        }
     }
 
     configPublishDependency(publicationName, publishTask)

@@ -9,7 +9,8 @@ Package Management.
 This plugin mainly provides three features for Kotlin Multiplatform project:
 
 1. Build the KMM project for both Android and iOS artifacts
-2. Config the Maven Publish tasks for Android artifacts which is AAR and iOS artifacts which is XCFrameworks
+2. Config the Maven Publish tasks for Android artifacts which is AAR and iOS artifacts which is
+   XCFrameworks
 3. Deploy the iOS artifacts which is XCFramework to the remote Podspec module or SPM module
 
 ## Build the Project
@@ -33,21 +34,25 @@ artifacts for Android and iOS.
 ./gradlew buildKMM
 ```
 
-3. Build just Android AAR or iOS XCFramework for Multiplatform Module
+3. Build just Android AAR or iOS XCFramework or JVM Jar for Multiplatform Module
 
 ```shell
 ./gradlew buildKMMAARs
 ./gradlew buildKMMXCFrameworks
+./gradlew buildKMMJvmJar
 ```
 
 After the build tasks finished, you can find the corresponding artifacts at:
+
 1. Android: /build/outputs/aar/***.aar
 2. iOS CocoaPods: /build/cocoapods/publish/
 3. iOS XCFrameworks: /build/XCFrameworks/
+4. Jvm Jar: /build/lib/***.jar
 
-## Config the Maven Publish for Android AAR
+## Config the Maven Publish for Artifacts
 
 ### Android
+
 After we get the AAR output of the KMM, we need to deploy it to a remote repository so that
 our main project can import and apply it. The normal way it to deploy it to a remote Maven
 repository.
@@ -57,12 +62,16 @@ Thus, this plugin will automatically create some useful maven publish tasks for 
 ./gradlew publishKMMAndroidPublicationToMavenLocal
 ./gradlew publishKMMAndroidPublicationToMavenRepository
 ```
-Under the group kmmdeploy, there is also a task which will trigger publishKMMAndroidPublicationToMavenRepository for convenient
+
+Under the group kmmdeploy, there is also a task which will trigger
+publishKMMAndroidPublicationToMavenRepository for convenient
+
 ```shell
 ./gradlew publishAAR
 ```
 
 ### iOS SPM
+
 Start from version 2.0.0, this plugin add support for SPM. It will configure the maven publish tasks
 for the zip file of XCFrameworks.
 
@@ -71,9 +80,28 @@ for the zip file of XCFrameworks.
 ./gradlew publishKMMSpmPublicationToMavenRepository
 ```
 
-Under the group kmmdeploy, there is also a task which will trigger publishKMMSpmPublicationToMavenRepository for convenient
+Under the group kmmdeploy, there is also a task which will trigger
+publishKMMSpmPublicationToMavenRepository for convenient
+
 ```shell
 ./gradlew publishXCFrameworks
+```
+
+### Jvm
+
+Start from version 2.2.0, this plugin add support for SPM. It will configure the maven publish tasks
+for the output of Jvm Jar.
+
+```shell
+./gradlew publishKMMJvmPublicationToMavenLocal
+./gradlew publishKMMJvmPublicationToMavenRepository
+```
+
+Under the group kmmdeploy, there is also a task which will trigger
+publishKMMJvmPublicationToMavenRepository for convenient
+
+```shell
+./gradlew publishJvmJar
 ```
 
 ## Deploy the Artifacts
@@ -82,8 +110,9 @@ For iOS artifacts, this plugin supports three ways to deploy:
 
 ### Local Directory
 
-If you are at the developing stage and want to debug the current code. Then you can deploy it locally.
-It just copies the output which is XCFramework to an output directory at the root directory. 
+If you are at the developing stage and want to debug the current code. Then you can deploy it
+locally.
+It just copies the output which is XCFramework to an output directory at the root directory.
 You will have the freedom on how to use that artifact.
 
 ```shell
@@ -109,29 +138,48 @@ git submodule add https://github.com/url
 
 ### SPM
 
-As mentioned before, since version 2.0.0, this plugin supports the Swift Package Management. 
-It will create the zip file of the XCFramework and Package.swift file which contains the package information. 
-Then it will publish the zip file to maven when you run deploy task. 
+As mentioned before, since version 2.0.0, this plugin supports the Swift Package Management.
+It will create the zip file of the XCFramework and Package.swift file which contains the package
+information.
+Then it will publish the zip file to maven when you run deploy task.
 
 To use it, you just need to configure the remote repository url for zip file:
+
 ```kotlin
 kmmDeploy {
     spm("https://maven.pkg.github.com/KevinnZou/KMMDeployPlugin")
 }
 ```
-The Url after spm is the remote repository that will keep the zip file. It will take the first repository 
+
+The Url after spm is the remote repository that will keep the zip file. It will take the first
+repository
 in Maven Publish configuration by default.
 
-Then run the deploy task to create the Package.swift file and publish the zip file to remote repository
+Then run the deploy task to create the Package.swift file and publish the zip file to remote
+repository
+
 ```shell
 ./gradlew deployKMMiOSSpm
 ```
 
 ### Deploy Android Artifacts
-The deploy task will trigger the maven publish tasks configured at before. Furthermore, it will copy the artifacts
+
+The deploy task will trigger the maven publish tasks for Android AAR configured at before.
+Furthermore, it will copy the artifacts
 to root folder of the project so that you can use it for local development.
+
 ```shell
 ./gradlew deployKMMAndroid
+```
+
+### Deploy Jvm Artifacts
+
+The deploy task will trigger the maven publish tasks for Jvm Jar configured at before. Furthermore,
+it will copy the artifacts
+to root folder of the project so that you can use it for local development.
+
+```shell
+./gradlew deployKMMJvm
 ```
 
 ### Deploy All Artifacts
@@ -154,7 +202,7 @@ to Maven for both Android and iOS.
 ## Prerequisites
 
 Since this project use CocoaPods and Maven for Artifacts deployment of Kotlin Multiplatform project,
-the project that want to use this plugin must apply kotlin("native.cocoapods"), `maven-publish`, 
+the project that want to use this plugin must apply kotlin("native.cocoapods"), `maven-publish`,
 and kotlin("multiplatform") plugins.
 
 ```kotlin
@@ -165,13 +213,15 @@ plugins {
 }
 ```
 
-Notice that： Start from Version 1.3.0， Cocoapods plugin is not required to be applied. If you still want to
+Notice that： Start from Version 1.3.0， Cocoapods plugin is not required to be applied. If you still
+want to
 build XCFramework, you can configure the project as follows:
+
 ```kotlin
 kotlin {
 
     val iosTargets = listOf(iosX64(), iosArm64(), iosSimulatorArm64())
-    
+
     val xcf = XCFramework()
     iosTargets.forEach {
         it.binaries.framework {
@@ -218,6 +268,7 @@ publishing {
 ```
 
 ## Setup Cocoapods
+
 As mentioned before, since version 1.3.0, it is not required to use cocoapods plugin.
 
 If you want to use cocoapods as dependency for iOS deploy, then you need to configure the
@@ -254,7 +305,7 @@ interface KmmDeployExtension {
     val version: Property<String>
 
     /**
-     * ArtifactId for artifacts published to Maven
+     * ArtifactId for Android artifacts published to Maven
      * Use "kmm-android" by default
      */
     val androidArtifactId: Property<String>
@@ -272,7 +323,13 @@ interface KmmDeployExtension {
     val outputDirectory: Property<String>
 
     /**
-     * ArtifactId for artifacts published to Maven
+     * ArtifactId for Jvm artifacts published to Maven
+     * Use "kmm-spm" by default
+     */
+    val jvmArtifactId: Property<String>
+
+    /**
+     * ArtifactId for iOS artifacts published to Maven
      * Use "kmm-spm" by default
      */
     val spmArtifactId: Property<String>
@@ -317,17 +374,23 @@ kmmDeploy {
 ```
 
 # Local Development
+
 This plugin also supports local development
 
-## Android 
-After you finished development, you can just call copyAndroidAAR task which will build the android aar
+## Android
+
+After you finished development, you can just call copyAndroidAAR task which will build the android
+aar
 and copy it to the root directory of the project.
+
 ```shell
 ./gradlew copyAndroidAAR
 ```
 
-Assume your android project is at the same directory with KMM project, then you can depend on the KMM Aar 
+Assume your android project is at the same directory with KMM project, then you can depend on the
+KMM Aar
 produced at last step like that:
+
 ```kotlin
 dependencies {
     implementation(files("../KMMProject/kmm-outputs/shared-debug.aar"))
@@ -335,9 +398,14 @@ dependencies {
 ```
 
 ## iOS
-For iOS, we provide both cocoapods and SPM way. You can just call copyXCFramework task which will build the
-iOS artifact, zip it, and copy it to the root project. It will also produce the podfile if you apply cocoapods
-plugin. With these outputs, you can directly move the produced XCFramework to Xcode and use it locally.
+
+For iOS, we provide both cocoapods and SPM way. You can just call copyXCFramework task which will
+build the
+iOS artifact, zip it, and copy it to the root project. It will also produce the podfile if you apply
+cocoapods
+plugin. With these outputs, you can directly move the produced XCFramework to Xcode and use it
+locally.
+
 ```shell
 ./gradlew copyXCFramework
 ```
