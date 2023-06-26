@@ -89,7 +89,7 @@ publishKMMSpmPublicationToMavenRepository for convenient
 
 ### Jvm
 
-Start from version 2.2.0, this plugin add support for SPM. It will configure the maven publish tasks
+Start from version 2.2.0, this plugin add support for JVM. It will configure the maven publish tasks
 for the output of Jvm Jar.
 
 ```shell
@@ -103,6 +103,8 @@ publishKMMJvmPublicationToMavenRepository for convenient
 ```shell
 ./gradlew publishJvmJar
 ```
+
+Note: the plugin will publish the source code for all targets by default, set 'publishSources' to false if you do not need that.
 
 ## Deploy the Artifacts
 
@@ -240,14 +242,14 @@ error.
 Since this plugin has be uploaded to the Center Gradle Portal, you can just apply it without adding
 depending repository.
 
-Current version is **_2.2.0_**
+Current version is **_2.3.0_**
 
 ```kotlin
 plugins {
     kotlin("multiplatform")
     kotlin("native.cocoapods")
     `maven-publish`
-    id("io.github.kevinnzou.kmmdeploy") version "2.2.0"
+    id("io.github.kevinnzou.kmmdeploy") version "2.3.0"
 }
 ```
 
@@ -298,68 +300,74 @@ This plugin provides an extension for config the properties:
 
 ```kotlin
 interface KmmDeployExtension {
-    /**
-     * Version for artifacts published to Maven
-     * Use gradle version by default
-     */
-    val version: Property<String>
+   /**
+    * Version for artifacts published to Maven
+    * Use gradle version by default
+    */
+   val version: Property<String>
 
-    /**
-     * ArtifactId for Android artifacts published to Maven
-     * Use "kmm-android" by default
-     */
-    val androidArtifactId: Property<String>
+   /**
+    * ArtifactId for Android artifacts published to Maven
+    * Use "kmm-android" by default
+    */
+   val androidArtifactId: Property<String>
 
-    /**
-     * The name of the submodule that manages the Podspec file and XCFramework
-     * If you do not want to use submodule, please don't specify this property
-     */
-    val podspecRepoName: Property<String>
+   /**
+    * whether to include the source code in published artifacts
+    * Use true by default
+    */
+   val publishSources: Property<Boolean>
 
-    /**
-     * The name of the output directory for artifacts of Android and iOS
-     * Use "KMMOutputs" by default
-     */
-    val outputDirectory: Property<String>
+   /**
+    * The name of the submodule that manages the Podspec file and XCFramework
+    * If you do not want to use submodule, please don't specify this property
+    */
+   val podspecRepoName: Property<String>
 
-    /**
-     * ArtifactId for Jvm artifacts published to Maven
-     * Use "kmm-spm" by default
-     */
-    val jvmArtifactId: Property<String>
+   /**
+    * The name of the output directory for artifacts of Android and iOS
+    * Use "KMMOutputs" by default
+    */
+   val outputDirectory: Property<String>
 
-    /**
-     * ArtifactId for iOS artifacts published to Maven
-     * Use "kmm-spm" by default
-     */
-    val spmArtifactId: Property<String>
+   /**
+    * ArtifactId for Jvm artifacts published to Maven
+    * Use "kmm-spm" by default
+    */
+   val jvmArtifactId: Property<String>
 
-    /**
-     * The Name of the Zip file of XCFrameworks
-     * Use "$name-xcframework-$version" by default
-     */
-    val xcFrameworkZipName: Property<String>
+   /**
+    * ArtifactId for iOS artifacts published to Maven
+    * Use "kmm-spm" by default
+    */
+   val spmArtifactId: Property<String>
 
-    /**
-     * Whether need SPM Support
-     * Use false by default
-     */
-    val useSpm: Property<Boolean>
+   /**
+    * The Name of the Zip file of XCFrameworks
+    * Use "$name-xcframework-$version" by default
+    */
+   val xcFrameworkZipName: Property<String>
 
-    /**
-     * The url of the repository that store the zip file of XCFrameworks
-     * which will be used to fill the url filed of Package.swift files
-     * Use the url of the first repository in maven-publish extension by default
-     */
-    val spmUrl: Property<String>
+   /**
+    * Whether need SPM Support
+    * Use false by default
+    */
+   val useSpm: Property<Boolean>
 
-    /**
-     * Need SPM Support
-     */
-    fun Project.spm(url: String? = null) {
-        useSpm.set(true)
-        url?.apply { spmUrl.set(url) }
-    }
+   /**
+    * The url of the repository that store the zip file of XCFrameworks
+    * which will be used to fill the url filed of Package.swift files
+    * Use the url of the first repository in maven-publish extension by default
+    */
+   val spmUrl: Property<String>
+
+   /**
+    * Need SPM Support
+    */
+   fun Project.spm(url: String? = null) {
+      useSpm.set(true)
+      url?.apply { spmUrl.set(url) }
+   }
 }
 ```
 

@@ -20,7 +20,7 @@ java {
 }
 
 group = "io.github.kevinnzou"
-version = "2.2.0"
+version = "2.3.0"
 
 gradlePlugin {
     website.set("https://github.com/KevinnZou/KMMDeployPlugin")

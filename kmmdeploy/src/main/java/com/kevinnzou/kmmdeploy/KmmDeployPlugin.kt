@@ -22,6 +22,7 @@ class KmmDeployPlugin : Plugin<Project> {
             jvmArtifactId.convention("kmm-jvm")
             outputDirectory.convention("kmm-outputs")
             useSpm.convention(false)
+            publishSources.convention(true)
         }
         afterEvaluate {
             applyBuildTasks()
@@ -109,6 +110,12 @@ interface KmmDeployExtension {
      * Use "kmm-android" by default
      */
     val androidArtifactId: Property<String>
+
+    /**
+     * whether to include the source code in published artifacts
+     * Use true by default
+     */
+    val publishSources: Property<Boolean>
 
     /**
      * The name of the submodule that manages the Podspec file and XCFramework

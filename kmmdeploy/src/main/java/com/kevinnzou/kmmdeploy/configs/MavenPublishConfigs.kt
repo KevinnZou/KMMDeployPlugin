@@ -12,6 +12,7 @@ import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.api.tasks.bundling.Zip
 import org.gradle.configurationcache.extensions.capitalized
+import org.gradle.kotlin.dsl.get
 
 /**
  * Created By Kevin Zou On 2023/5/18
@@ -20,6 +21,7 @@ internal fun Project.configAndroidKMMPublish(publishTask: TaskProvider<Task>? = 
     val androidArtifactId = kmmDeployExt.androidArtifactId.get()
     val version = kmmDeployExt.version.getOrElse(project.version as String)
     val publicationName = androidPublishName
+
     publishExt.publications.create(publicationName, MavenPublication::class.java) {
         this.version = version
         this.groupId = project.group as String
@@ -30,7 +32,12 @@ internal fun Project.configAndroidKMMPublish(publishTask: TaskProvider<Task>? = 
         artifact(archiveProvider) {
             extension = "aar"
         }
-//        artifact("build/outputs/aar/shared-release.aar")
+        if (kmmDeployExt.publishSources.get()) {
+            val task = tasks["androidReleaseSourcesJar"]
+            artifact(task) {
+                classifier = "sources"
+            }
+        }
     }
 
     configPublishDependency(publicationName, publishTask)
@@ -40,6 +47,7 @@ internal fun Project.configJvmJarKMMPublish(publishTask: TaskProvider<Task>? = n
     val jvmArtifactId = kmmDeployExt.jvmArtifactId.get()
     val version = kmmDeployExt.version.getOrElse(project.version as String)
     val publicationName = jvmPublishName
+
     publishExt.publications.create(publicationName, MavenPublication::class.java) {
         this.version = version
         this.groupId = project.group as String
@@ -50,6 +58,13 @@ internal fun Project.configJvmJarKMMPublish(publishTask: TaskProvider<Task>? = n
         artifact(archiveProvider) {
             extension = "jar"
         }
+        if (kmmDeployExt.publishSources.get()) {
+            val task = tasks["jvmSourcesJar"]
+            artifact(task) {
+                classifier = "sources"
+            }
+        }
+
     }
 
     configPublishDependency(publicationName, publishTask)
